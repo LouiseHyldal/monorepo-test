@@ -1,9 +1,6 @@
 import http, { IncomingMessage, ServerResponse } from "http";
+import routes from "./routes";
 
-const server = http.createServer(
-  (req: IncomingMessage, res: ServerResponse) => {
-    console.log(req);
-  }
-);
+const server = http.createServer(routes);
 
 server.listen(3000);
