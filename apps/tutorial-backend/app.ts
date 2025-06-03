@@ -1,15 +1,20 @@
 import express, { Request, Response, NextFunction } from "express";
+import bodyParser from "body-parser";
+import path from "path";
+
+import adminRoutes from "./routes/admin";
+import shopRoutes from "./routes/shop";
 
 const app = express();
 
-app.use("/add-product", (req: Request, res: Response, next: NextFunction) => {
-  console.log("Hello world");
-  res.send("<h1>Hello from add product</h1>");
-});
+app.use(bodyParser.urlencoded());
+app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/", (req: Request, res: Response, next: NextFunction) => {
-  console.log("Hello world");
-  res.send("<h1>Hello from Express</h1>");
+app.use("/admin", adminRoutes);
+app.use(shopRoutes);
+
+app.use((req: Request, res: Response) => {
+  res.status(404).sendFile(path.join(__dirname, "views", "404.html"));
 });
 
 app.listen(3000);
