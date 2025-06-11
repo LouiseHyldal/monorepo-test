@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from "express";
 import bodyParser from "body-parser";
 import path from "path";
 
-import adminRoutes from "./routes/admin";
+import {router, products} from "./routes/admin";
 import shopRoutes from "./routes/shop";
 
 const app = express();
@@ -10,7 +10,7 @@ const app = express();
 app.use(bodyParser.urlencoded());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use("/admin", adminRoutes);
+app.use("/admin", router);
 app.use(shopRoutes);
 
 app.use((req: Request, res: Response) => {

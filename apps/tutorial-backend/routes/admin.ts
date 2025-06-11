@@ -3,8 +3,11 @@ import path from "path";
 import express, { Request, Response, NextFunction } from "express";
 
 import rootDir from "../util/path";
+import { Product } from "./type";
 
-const router = express.Router();
+export const router = express.Router();
+
+export const products: Product[] = [];
 
 router.get(
   "/add-product",
@@ -14,8 +17,6 @@ router.get(
 );
 
 router.post("/add-product", (req: Request, res: Response) => {
-  console.log(req.body);
+  products.push({ title: req.body.title });
   res.redirect("/");
 });
-
-export default router;
