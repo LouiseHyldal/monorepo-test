@@ -8,8 +8,7 @@ import { products } from "../routes/admin";
 const router = express.Router();
 
 router.get("/", (req: Request, res: Response, next: NextFunction) => {
-  console.log(products);
-  res.sendFile(path.join(rootDir, "views", "shop.html"));
+  res.render("shop", { prods: products, pageTitle: "Shop", path: "/" });
 });
 
 export default router;

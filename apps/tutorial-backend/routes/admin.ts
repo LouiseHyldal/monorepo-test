@@ -2,7 +2,6 @@ import path from "path";
 
 import express, { Request, Response, NextFunction } from "express";
 
-import rootDir from "../util/path";
 import { Product } from "./type";
 
 export const router = express.Router();
@@ -12,7 +11,10 @@ export const products: Product[] = [];
 router.get(
   "/add-product",
   (req: Request, res: Response, next: NextFunction) => {
-    res.sendFile(path.join(rootDir, "views", "add-product.html"));
+    res.render("add-product", {
+      pageTitle: "Add Product",
+      path: "/admin/add-product",
+    });
   }
 );
 
