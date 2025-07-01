@@ -1,4 +1,4 @@
-import path from "path";
+import path, { resolve } from "path";
 import fs from "fs";
 
 const p = path.join(
@@ -7,44 +7,55 @@ const p = path.join(
   "products.json"
 );
 
-const getProductsFromFile = (cb: Function) => {
-  fs.readFile(p, (err, fileContent) => {
-    if (err) {
-      return cb([]);
-    } else {
-      cb(JSON.parse(fileContent.toString()));
-    }
+function readFilePromis() {
+  return new Promise<Product[] | undefined>((resolve, reject) => {
+    fs.readFile(p, (err, fileContent) => {
+      if (err) {
+        reject(undefined);
+      } else {
+        resolve(JSON.parse(fileContent.toString()));
+      }
+    });
   });
-};
+}
+
+function getProductsFromFile() {
+  return readFilePromis();
+}
 
 export class Product {
+  id: string;
   title: string;
   imageUrl: string;
   description: string;
   price: number;
   constructor(
+    id: string,
     title: string,
     imageUrl: string,
     description: string,
     price: number
   ) {
+    this.id = id;
     this.title = title;
     this.imageUrl = imageUrl;
     this.description = description;
     this.price = price;
   }
 
-  save() {
-    getProductsFromFile((products: Product[]) => {
-      products.push(this);
-      fs.writeFile(p, JSON.stringify(products), (err) => {
-        console.log(err);
-      });
-    });
-    fs.readFile(p, (err, fileContent) => {});
+  async save() {
+    this.id = Math.random().toString();
+    getProductsFromFile();
   }
 
-  static fetchAll(cb: Function) {
-    getProductsFromFile(cb);
+  static async fetchAll() {
+    return getProductsFromFile();
+  }
+
+  static async findById(id: string) {
+    const products = await getProductsFromFile();
+    if (products) {
+      return products.find((p) => p.id === id);
+    }
   }
 }

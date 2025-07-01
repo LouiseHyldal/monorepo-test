@@ -1,23 +1,44 @@
 import { Request, Response, NextFunction } from "express";
 import { Product } from "../models/product";
 
-export function getProducts(req: Request, res: Response, next: NextFunction) {
-  Product.fetchAll((products: Product[]) => {
-    res.render("shop/product-list", {
-      prods: products,
-      pageTitle: "All Products",
-      path: "/products",
-    });
+export async function getProducts(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const products = await Product.fetchAll();
+
+  res.render("shop/product-list", {
+    prods: products,
+    pageTitle: "All Products",
+    path: "/products",
   });
 }
 
-export function getIndex(req: Request, res: Response, next: NextFunction) {
-  Product.fetchAll((products: Product[]) => {
-    res.render("shop/index", {
-      prods: products,
-      pageTitle: "Shop",
-      path: "/",
-    });
+export async function getProduct(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const prodId = req.params.productId;
+  const product = await Product.findById(prodId);
+  res.render("shop/product-detail", {
+    product: product,
+    pageTitle: product?.title,
+    path: "/products",
+  });
+}
+export async function getIndex(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const products = await Product.fetchAll();
+
+  res.render("shop/index", {
+    prods: products,
+    pageTitle: "Shop",
+    path: "/",
   });
 }
 
