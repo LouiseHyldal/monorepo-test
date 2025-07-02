@@ -14,6 +14,7 @@ export function postAddProduct(req: Request, res: Response) {
   const imageUrl = req.body.imageUrl;
   const description = req.body.description;
   const price = req.body.price;
+
   const product = new Product(id, title, imageUrl, description, price);
   product.save();
   res.redirect("/");

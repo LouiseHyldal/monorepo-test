@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { Product } from "../models/product";
+import { Cart } from "../models/cart";
 
 export async function getProducts(
   req: Request,
@@ -47,6 +48,17 @@ export function getCart(req: Request, res: Response, next: NextFunction) {
     pageTitle: "Your Cart",
     path: "/cart",
   });
+}
+
+export async function postCart(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const prodId = req.body.productId;
+  const product = await Product.findById(prodId);
+  Cart.addProduct(prodId, product ? product.price : 0);
+  res.redirect("/cart");
 }
 
 export function getOrders(req: Request, res: Response, next: NextFunction) {
