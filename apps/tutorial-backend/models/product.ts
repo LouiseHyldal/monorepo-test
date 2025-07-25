@@ -1,4 +1,4 @@
-import path, { resolve } from "path";
+import path from "path";
 import fs from "fs";
 
 const p = path.join(
@@ -22,6 +22,7 @@ function readFilePromis() {
 function getProductsFromFile() {
   return readFilePromis();
 }
+
 export type ProductType = {
   id: string;
   title: string;
@@ -31,14 +32,14 @@ export type ProductType = {
   qty?: number;
 };
 export class Product {
-  id: string;
+  id: string | null;
   title: string;
   imageUrl: string;
   description: string;
   price: number;
   qty?: number;
   constructor(
-    id: string,
+    id: string | null,
     title: string,
     imageUrl: string,
     description: string,
@@ -54,8 +55,22 @@ export class Product {
   }
 
   async save() {
-    this.id = Math.random().toString();
-    getProductsFromFile();
+    const products = await getProductsFromFile();
+    if (this.id && products) {
+      const updatedProducts = this.updatedProducts(this.id, products);
+      fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
+        console.log(err);
+      });
+    } else {
+      this.id = Math.random().toString();
+      if (products) {
+        products.push(this);
+
+        fs.writeFile(p, JSON.stringify(products), (err) => {
+          console.log(err);
+        });
+      }
+    }
   }
 
   static async fetchAll() {
@@ -66,6 +81,15 @@ export class Product {
     const products = await getProductsFromFile();
     if (products) {
       return products.find((p) => p.id === id);
+    }
+  }
+
+  updatedProducts(id: string, products: Product[]) {
+    const existingProductIndex = products.findIndex((prod) => prod.id === id);
+    if (products && existingProductIndex) {
+      const updatedProducts = [...products];
+      updatedProducts[existingProductIndex] = this;
+      return updatedProducts;
     }
   }
 }
