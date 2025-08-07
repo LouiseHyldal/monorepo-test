@@ -44,9 +44,24 @@ export async function getIndex(
 }
 
 export function getCart(req: Request, res: Response, next: NextFunction) {
-  res.render("shop/cart", {
-    pageTitle: "Your Cart",
-    path: "/cart",
+  Cart.getCart(async (cart: any) => {
+    const products = await Product.fetchAll();
+    if (products) {
+      const cartProducts = [];
+      for (const product of products) {
+        const cartProductData = cart.products.find(
+          (p: Product) => p.id === product.id
+        );
+        if (cartProductData) {
+          cartProducts.push({ productData: product, qty: cartProductData.qty });
+        }
+      }
+      res.render("shop/cart", {
+        pageTitle: "Your Cart",
+        path: "/cart",
+        products: cartProducts,
+      });
+    }
   });
 }
 
@@ -59,6 +74,19 @@ export async function postCart(
   const product = await Product.findById(prodId);
   Cart.addProduct(prodId, product ? product.price : 0);
   res.redirect("/cart");
+}
+
+export async function postCartDeleteProduct(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const prodId = req.body.productId;
+  const product = await Product.findById(prodId);
+  if (product) {
+    Cart.deleteProduct(prodId, product.price);
+    res.redirect("/cart");
+  }
 }
 
 export function getOrders(req: Request, res: Response, next: NextFunction) {

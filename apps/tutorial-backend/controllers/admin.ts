@@ -78,3 +78,13 @@ export async function getProducts(
     path: "/admin/products",
   });
 }
+
+export function postDeleteProducts(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const prodId = req.body.productId;
+  Product.delete(prodId);
+  res.redirect("/adming/products");
+}

@@ -1,5 +1,6 @@
 import path from "path";
 import fs from "fs";
+import { Cart } from "./cart";
 
 const p = path.join(
   path.dirname(require.main?.filename ?? ""),
@@ -68,6 +69,21 @@ export class Product {
 
         fs.writeFile(p, JSON.stringify(products), (err) => {
           console.log(err);
+        });
+      }
+    }
+  }
+
+  static async delete(id: string) {
+    const products = await getProductsFromFile();
+    if (products) {
+      const product = products.find((p) => p.id === id);
+      if (product) {
+        const updatedProducts = products.filter((p) => p.id !== id);
+        fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
+          if (!err) {
+            Cart.deleteProduct(id, product.price);
+          }
         });
       }
     }
