@@ -5,12 +5,22 @@ import path from "path";
 import adminRoutes from "./routes/admin";
 import shopRoutes from "./routes/shop";
 import { get404 } from "./controllers/error";
+import database from "./util/database";
 
 const app = express();
 
 app.set("view engine", "ejs");
 //Default is set to /views, set it to something else if needed, this would be redundant
 app.set("views", "views");
+
+database
+  .execute("SELECT * FROM products")
+  .then((result) => {
+    console.log(result);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 app.use(bodyParser.urlencoded());
 app.use(express.static(path.join(__dirname, "public")));
