@@ -1,11 +1,11 @@
-import express, { Request, Response, NextFunction } from "express";
+import express from "express";
 import bodyParser from "body-parser";
 import path from "path";
 
 import adminRoutes from "./routes/admin";
 import shopRoutes from "./routes/shop";
 import { get404 } from "./controllers/error";
-import database from "./util/database";
+import sequelize from "./util/database";
 
 const app = express();
 
@@ -20,5 +20,12 @@ app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 
 app.use(get404);
+
+sequelize
+  .sync()
+  .then(() => {
+    console.log('Database synced');
+  })
+  .catch((err) => console.log(err));
 
 app.listen(3000);

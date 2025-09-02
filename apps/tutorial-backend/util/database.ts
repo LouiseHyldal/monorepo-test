@@ -1,11 +1,11 @@
-import mysql from "mysql2";
-import 'dotenv/config';
+import "dotenv/config";
+import { Sequelize } from "sequelize";
 
-const pool = mysql.createPool({
-  host: process.env.WSL_IP,
-  user: "wsl_root",
-  database: "node-course",
-  password: process.env.DB_PASSWORD,
-});
+const sequelize = new Sequelize(
+  "node-course",
+  "wsl_root",
+  process.env.DB_PASSWORD,
+  { dialect: "mysql", host: process.env.WSL_IP }
+);
 
-export default pool.promise();
+export default sequelize;
