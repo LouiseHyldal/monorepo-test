@@ -1,28 +1,6 @@
-import path from "path";
-import fs from "fs";
+import database from "../util/database";
 import { Cart } from "./cart";
-
-const p = path.join(
-  path.dirname(require.main?.filename ?? ""),
-  "data",
-  "products.json"
-);
-
-function readFilePromis() {
-  return new Promise<Product[] | undefined>((resolve, reject) => {
-    fs.readFile(p, (err, fileContent) => {
-      if (err) {
-        reject(undefined);
-      } else {
-        resolve(JSON.parse(fileContent.toString()));
-      }
-    });
-  });
-}
-
-function getProductsFromFile() {
-  return readFilePromis();
-}
+import mysql, { RowDataPacket } from "mysql2";
 
 export type ProductType = {
   id: string;
@@ -55,57 +33,20 @@ export class Product {
     this.qty = qty;
   }
 
-  async save() {
-    const products = await getProductsFromFile();
-    if (this.id && products) {
-      const updatedProducts = this.updatedProducts(this.id, products);
-      fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
-        console.log(err);
-      });
-    } else {
-      this.id = Math.random().toString();
-      if (products) {
-        products.push(this);
-
-        fs.writeFile(p, JSON.stringify(products), (err) => {
-          console.log(err);
-        });
-      }
-    }
+  save() {
+    return database.execute(
+      "INSERT INTO products (title, price, imageUrl, description) VALUE (?, ?, ?, ?)",
+      [this.title, this.price, this.imageUrl, this.description]
+    );
   }
 
-  static async delete(id: string) {
-    const products = await getProductsFromFile();
-    if (products) {
-      const product = products.find((p) => p.id === id);
-      if (product) {
-        const updatedProducts = products.filter((p) => p.id !== id);
-        fs.writeFile(p, JSON.stringify(updatedProducts), (err) => {
-          if (!err) {
-            Cart.deleteProduct(id, product.price);
-          }
-        });
-      }
-    }
+  static delete(id: string) {}
+
+  static fetchAll() {
+    return database.execute<RowDataPacket[]>("SELECT * FROM products");
   }
 
-  static async fetchAll() {
-    return getProductsFromFile();
-  }
-
-  static async findById(id: string) {
-    const products = await getProductsFromFile();
-    if (products) {
-      return products.find((p) => p.id === id);
-    }
-  }
-
-  updatedProducts(id: string, products: Product[]) {
-    const existingProductIndex = products.findIndex((prod) => prod.id === id);
-    if (products && existingProductIndex) {
-      const updatedProducts = [...products];
-      updatedProducts[existingProductIndex] = this;
-      return updatedProducts;
-    }
+  static findById(id: string) {
+    return database.execute<RowDataPacket[]>("SELECT * FROM products WHERE products.id = ?", [id]);
   }
 }

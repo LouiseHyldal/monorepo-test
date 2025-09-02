@@ -17,8 +17,12 @@ export function postAddProduct(req: Request, res: Response) {
   const price = req.body.price;
 
   const product = new Product(null, title, imageUrl, description, price);
-  product.save();
-  res.redirect("/");
+  product
+    .save()
+    .then(() => {
+      res.redirect("/");
+    })
+    .catch((err) => console.log(err));
 }
 
 export async function getEditProduct(
