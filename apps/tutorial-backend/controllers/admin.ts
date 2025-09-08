@@ -21,7 +21,10 @@ export function postAddProduct(req: Request, res: Response) {
     imageUrl: imageUrl,
     description: description,
   })
-    .then(() => console.log("Created Product"))
+    .then(() => {
+      console.log("Created Product");
+      res.redirect("/admin/products");
+    })
     .catch((err) => console.log(err));
 }
 
@@ -90,12 +93,21 @@ export async function getProducts(
     .catch((err) => console.log(err));
 }
 
-// export function postDeleteProducts(
-//   req: Request,
-//   res: Response,
-//   next: NextFunction
-// ) {
-//   const prodId = req.body.productId;
-//   Product.delete(prodId);
-//   res.redirect("/adming/products");
-// }
+export function postDeleteProducts(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const prodId = req.body.productId;
+  Product.findByPk(prodId)
+    .then((product) => {
+      if (product) {
+        return product.destroy();
+      }
+    })
+    .then((result) => {
+      console.log("Destroyed product");
+      res.redirect("/admin/products");
+    })
+    .catch((err) => console.log(err));
+}
