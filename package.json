@@ -3,17 +3,16 @@
   "version": "1.0.0",
   "description": "",
   "packageManager": "pnpm@10.5.2",
-  "dependencies": {
-    "dayjs": "^1.11.13",
-    "package-a": "workspace:*"
-  },
   "scripts": {
     "start": "pnpm --stream -r start",
     "dev": "pnpm --stream -r dev"
   },
-  "devDependencies": {
-    "@types/node": "^22.13.8",
+  "dependencies": {
     "typescript": "^5.8.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.18",
+    "ts-node": "^10.9.2"
   },
   "workspaces": [
     "packages/*"

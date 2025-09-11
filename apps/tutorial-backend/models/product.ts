@@ -1,4 +1,4 @@
-import Sequelize, { Model } from "sequelize";
+import Sequelize, { DataTypes, Model } from "sequelize";
 import sequelize from "../util/database";
 
 interface ProductType extends Model {
@@ -11,25 +11,25 @@ interface ProductType extends Model {
 
 const Product = sequelize.define<ProductType>("product", {
   id: {
-    type: Sequelize.INTEGER,
+    type: DataTypes.INTEGER,
     autoIncrement: true,
     allowNull: false,
     primaryKey: true,
   },
   title: {
-    type: Sequelize.STRING,
+    type: DataTypes.STRING,
     allowNull: false,
   },
   price: {
-    type: Sequelize.DOUBLE,
+    type: DataTypes.DOUBLE,
     allowNull: false,
   },
   imageUrl: {
-    type: Sequelize.STRING,
+    type: DataTypes.STRING,
     allowNull: false,
   },
   description: {
-    type: Sequelize.STRING,
+    type: DataTypes.STRING,
     allowNull: false,
   },
 });
