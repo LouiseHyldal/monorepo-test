@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import Product from "../models/product";
+import CartItem from "models/cart-item";
+import Cart from "models/cart";
 //import { Cart } from "../models/cart";
 
 export function getProducts(req: Request, res: Response, next: NextFunction) {
@@ -17,7 +19,7 @@ export function getProducts(req: Request, res: Response, next: NextFunction) {
 export function getProduct(req: Request, res: Response, next: NextFunction) {
   const prodId = req.params.productId;
   Product.findByPk(prodId)
-    .then(product => {
+    .then((product) => {
       res.render("shop/product-detail", {
         product: product,
         pageTitle: product?.title,
@@ -39,19 +41,23 @@ export function getIndex(req: Request, res: Response, next: NextFunction) {
     .catch((err) => console.log(err));
 }
 
-// export function getCart(req: Request, res: Response, next: NextFunction) {
-//   Cart.getCart(async (cart: any) => {
-//     Product.findAll()
-//       .then((products) => {
-//         res.render("shop/index", {
-//           prods: products,
-//           pageTitle: "Shop",
-//           path: "/",
-//         });
-//       })
-//       .catch((err) => console.log(err));
-//   });
-// }
+export function getCart(req: Request, res: Response, next: NextFunction) {
+  req.user
+    .getCart()
+    .then((cart: Cart) => {
+      return cart
+        .getProducts()
+        .then((products) => {
+          res.render("shop/cart", {
+            products: products,
+            pageTitle: "Cart",
+            path: "/cart",
+          });
+        })
+        .catch((err) => console.log(err));
+    })
+    .catch((err: Error) => console.log(err));
+}
 
 // export function postCart(req: Request, res: Response, next: NextFunction) {
 //   const prodId = req.body.productId;

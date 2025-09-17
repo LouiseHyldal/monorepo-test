@@ -1,5 +1,4 @@
 import {
-  BelongsToManyGetAssociationsMixin,
   CreationOptional,
   DataTypes,
   InferAttributes,
@@ -7,15 +6,16 @@ import {
   Model,
 } from "sequelize";
 import sequelize from "../util/database";
-import Product from "./product";
 
-class Cart extends Model<InferAttributes<Cart>, InferCreationAttributes<Cart>> {
+class CartItem extends Model<
+  InferAttributes<CartItem>,
+  InferCreationAttributes<CartItem>
+> {
   declare id: CreationOptional<number>;
-
-  declare getProducts: BelongsToManyGetAssociationsMixin<Product>;
+  declare quantity: number;
 }
 
-Cart.init(
+CartItem.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -23,8 +23,9 @@ Cart.init(
       allowNull: false,
       primaryKey: true,
     },
+    quantity: DataTypes.INTEGER,
   },
-  { tableName: "carts", sequelize }
+  { tableName: "cartitems", sequelize }
 );
 
-export default Cart;
+export default CartItem;

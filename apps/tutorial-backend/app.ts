@@ -8,6 +8,8 @@ import { get404 } from "./controllers/error";
 import sequelize from "./util/database";
 import Product from "./models/product";
 import User from "./models/user";
+import Cart from "./models/cart";
+import CartItem from "./models/cart-item";
 
 declare global {
   namespace Express {
@@ -45,6 +47,10 @@ app.use(get404);
 
 Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsTo(User);
+Cart.belongsToMany(Product, { through: CartItem });
+Product.belongsToMany(Cart, { through: CartItem });
 
 sequelize
   .sync()
@@ -56,6 +62,9 @@ sequelize
       return User.create({ name: "Louise", email: "test@test.com" });
     }
     return Promise.resolve(user);
+  })
+  .then((user) => {
+    return user.createCart();
   })
   .then(() => {
     app.listen(3000);

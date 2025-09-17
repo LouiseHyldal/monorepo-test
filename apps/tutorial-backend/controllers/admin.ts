@@ -39,8 +39,10 @@ export function getEditProduct(
     return res.redirect("/");
   }
   const prodId = req.params.productId;
-  Product.findByPk(prodId)
-    .then((product) => {
+  req.user
+    .getProducts({ where: { id: prodId } })
+    .then((products: Product[]) => {
+      const product = products[0];
       if (!product) {
         return res.redirect("/");
       }
@@ -51,7 +53,7 @@ export function getEditProduct(
         product: product,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err: Error) => console.log(err));
 }
 
 export function postEditProduct(
@@ -83,15 +85,16 @@ export async function getProducts(
   res: Response,
   next: NextFunction
 ) {
-  Product.findAll()
-    .then((products) => {
+  req.user
+    .getProducts()
+    .then((products: Product[]) => {
       res.render("admin/products", {
         prods: products,
         pageTitle: "Admin Products",
         path: "/admin/products",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err: Error) => console.log(err));
 }
 
 export function postDeleteProducts(
